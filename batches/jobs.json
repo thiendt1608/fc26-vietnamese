@@ -1,0 +1,32 @@
+{
+ "batches/nytw36itjracsdfhltca5v5rwldufx400vgp": {
+  "req": "req_01.jsonl",
+  "chunks": "chunks_01.json",
+  "done": true
+ },
+ "batches/cebrk5p2ljm3iklzfon98vpjgwpmp6edy2bv": {
+  "req": "req_01.jsonl",
+  "chunks": "chunks_01.json",
+  "done": true
+ },
+ "batches/lrz716vs51sg8yzmjxqttbqq6oo1q0qejsgo": {
+  "req": "req_02.jsonl",
+  "chunks": "chunks_02.json",
+  "done": true
+ },
+ "batches/vq1fchppfkpow4ec9eulnw37z5khpn2qkd5h": {
+  "req": "req_03.jsonl",
+  "chunks": "chunks_03.json",
+  "done": true
+ },
+ "batches/zfai94mbwbhwr9uhh2vdz8c3sl4jkpzlllsw": {
+  "req": "req_01.jsonl",
+  "chunks": "chunks_01.json",
+  "done": true
+ },
+ "batches/4jfeomfp89ews5j7lniui8xtph503ageb9vc": {
+  "req": "req_01.jsonl",
+  "chunks": "chunks_01.json",
+  "done": true
+ }
+}
