@@ -1,10 +1,8 @@
 -- lua/transfer_to_barcelona.lua
--- Script chuyen 100% toan bo 29 cau thu Viet Nam sang CLB FC Barcelona (ID: 241)
--- Ap dung dung theo danh sach 29 ID tu hinh anh (ID: 900 den 928)
--- Triet tieu toan bo duplicate thua, dam bao moi nguoi chi co DUY NHAT 1 BAN THE o Barcelona!
+-- Script chuyen 100% toan bo 29 cau thu Viet Nam sang FC Barcelona (ID: 241)
+-- Phien ban don gian thuan tuy: khong loc, khong xoa, chi chuyen teamid sang 241
 
-local BARCA_ID = 241         -- FC Barcelona
-local FREE_AGENTS_ID = 111592
+local BARCA_ID = 241 -- FC Barcelona
 
 local VN_PLAYERS = {
     [900] = "Dang Van Lam",
@@ -52,59 +50,43 @@ local function transfer_to_barcelona()
 
     local bInCM = safe_call(IsInCM) or false
 
-    -- 1. Neu trong Career Mode: goi API TransferPlayer voi 7 tham so chuan FC 26
+    -- 1. Neu trong Career Mode: goi API TransferPlayer dang ky hop dong
     if bInCM and TransferPlayer then
         for pid, name in pairs(VN_PLAYERS) do
             pcall(TransferPlayer, pid, BARCA_ID, 0, 5000, 3, 0, 0)
         end
     end
 
-    -- 2. Cap nhat truc tiep bang teamplayerlinks trong RAM database
+    -- 2. Cap nhat tat ca link cua 29 cau thu sang Barcelona (ID: 241)
     local links = safe_call(GetDBTableRows, "teamplayerlinks")
     if not links then
         print("[To Barca] ERROR: Khong lay duoc bang 'teamplayerlinks' tu RAM!")
         return
     end
 
-    local assigned_to_barca = {}
-    local moved_count = 0
-    local dup_cleaned = 0
-
+    local count = 0
     for i = 1, #links do
         local l = links[i]
         local pid = l.playerid and math.floor(tonumber(l.playerid.value) or 0) or 0
 
         if VN_PLAYERS[pid] then
-            if not assigned_to_barca[pid] then
-                -- Ban the dau tien: Chuyen sang FC Barcelona (ID 241)
-                l.teamid.value = tostring(BARCA_ID)
-                if type(EditDBTableField) == "function" then
-                    EditDBTableField(l.teamid)
-                end
-                assigned_to_barca[pid] = true
-                moved_count = moved_count + 1
-                print(string.format("  -> Da chuyen %s (ID %d) sang Barcelona (ID: 241)", VN_PLAYERS[pid], pid))
-            else
-                -- Ban the trung lap thua: Chuyen ve Free Agents de Barcelona khong bi duplicate
-                l.teamid.value = tostring(FREE_AGENTS_ID)
-                if type(EditDBTableField) == "function" then
-                    EditDBTableField(l.teamid)
-                end
-                dup_cleaned = dup_cleaned + 1
+            l.teamid.value = tostring(BARCA_ID)
+            if type(EditDBTableField) == "function" then
+                EditDBTableField(l.teamid)
             end
+            count = count + 1
+            print(string.format("  -> Da chuyen %s (ID %d) sang Barcelona (ID: 241)", VN_PLAYERS[pid], pid))
         end
     end
 
-    local msg = string.format("[To Barca] HOAN TAT! Da chuyen thanh cong %d / 29 cau thu sang Barcelona (ID: 241)!", moved_count)
-    local msg2 = string.format("[To Barca] Da xoa sach %d duplicate thua, moi cau thu chi co 1 ban the duy nhat tai Barcelona!", dup_cleaned)
+    local msg = string.format("[To Barca] HOAN TAT! Da chuyen thanh cong toan bo sang Barcelona (ID: 241) - Tong %d record!", count)
     print("==================================================")
     print(msg)
-    print(msg2)
     print("==================================================")
     pcall(function()
         local f = io.open("C:/FC 26 Live Editor/viet_hoa_log.txt", "a")
         if f then
-            f:write(msg .. "\n" .. msg2 .. "\n")
+            f:write(msg .. "\n")
             f:close()
         end
     end)
