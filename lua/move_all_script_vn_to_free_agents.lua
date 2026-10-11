@@ -18,6 +18,11 @@ local VN_NT_ID = 111527
 local PID_MIN = 900
 local PID_MAX = 928
 
+-- Cau thu DA DUOC chuyen nhuong DUNG CACH (qua game flow) -> bo qua, khong dua sang Free Agents.
+local EXCLUDED = {
+    [907] = true,  -- B H Viet Anh (Bui Hoang Viet Anh) - da chuyen nhuong dung cach
+}
+
 local function safe_call(fn, ...)
     if not fn then return nil end
     local ok, res = pcall(fn, ...)
@@ -34,7 +39,7 @@ local function toint(v, def)
 end
 
 local function is_vn(pid)
-    return pid >= PID_MIN and pid <= PID_MAX
+    return pid >= PID_MIN and pid <= PID_MAX and not EXCLUDED[pid]
 end
 
 local function commit(field, val)

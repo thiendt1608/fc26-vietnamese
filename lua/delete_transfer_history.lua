@@ -15,6 +15,11 @@ local BINH_TAN_ID = 115486
 local PID_MIN = 900
 local PID_MAX = 928
 
+-- Cau thu DA DUOC chuyen nhuong DUNG CACH -> giu nguyen lich su (khong xoa).
+local EXCLUDED = {
+    [907] = true,  -- B H Viet Anh (Bui Hoang Viet Anh) - da chuyen nhuong dung cach
+}
+
 local function safe_call(fn, ...)
     if not fn then return nil end
     local ok, res = pcall(fn, ...)
@@ -64,7 +69,7 @@ local function main()
         local r = rows[i]
         local pid = toint(fval(r.player1id), -1)
 
-        if pid >= PID_MIN and pid <= PID_MAX then
+        if pid >= PID_MIN and pid <= PID_MAX and not EXCLUDED[pid] then
             -- Thu xoa theo dia chi (row.addr)
             local addr = fval(r.addr)
             local del_ok = nil
