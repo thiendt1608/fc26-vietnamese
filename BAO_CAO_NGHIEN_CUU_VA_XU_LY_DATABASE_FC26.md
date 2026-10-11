@@ -232,3 +232,49 @@ Script này sử dụng hàm C++ `InsertDBTableRow(table, data)` để khắc ph
 > 1. Mở game Career Mode.  
 > 2. Mở Live Editor, chạy script sửa database.  
 > 3. Quay lại menu Career Mode, vào **Cài đặt / Lưu game (Save Game)** ngay lập tức để ép game ghi dữ liệu từ RAM xuống file save `.CM` trên ổ cứng!
+
+---
+
+## 7. PHÁT HIỆN MỚI (ĐỢT 2): CRASH VẪN TÁI DIỄN — 2 CRASH SITE RIÊNG BIỆT
+
+Sau khi chạy các fix trước, người dùng vẫn báo crash khi "Vào trận / Mô phỏng nhanh". Phân tích đối chiếu **toàn bộ 22 file Crash Dump** trong ngày theo thứ tự thời gian cho thấy crash đã **di chuyển qua 6 địa chỉ khác nhau** khi từng lỗi được vá dần:
+
+| Thời gian | Crash RVA | Kiểu truy cập | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| 14:22, 14:57 | `0x5742721` | READ `0x0` | Deref NULL offset 0 |
+| 15:11, 18:06, 19:30 | `0x1180d78` | WRITE `0x0` | Ghi vào NULL |
+| 15:33 | `0x82183c4` | READ `0x1034ff2b0` | Con trỏ rác |
+| 16:12 | `0x93ac046` | READ `0x8` | Deref NULL offset 8 |
+| 19:41, 20:34 | `0x85673ed` | READ `0x4` | **Site 1 — growth/ranking** ✅ đã fix |
+| 20:23, 21:15 | `0x85d51f2` | READ `0x4` | **Site 2 — CHƯA FIX** ❌ |
+
+### 7.1. Phát hiện then chốt: Có 2 crash site `READ 0x4` KHÁC NHAU
+* **Site 1** (`RVA 0x85673ed`): do thiếu bản ghi `career_playergrowthuserseason` + `career_squadranking` → đã được `fix_career_growth_and_ranking.lua` (chạy lúc 21:06) xử lý.
+* **Site 2** (`RVA 0x85d51f2`): nằm **cách site 1 ~450KB**, cùng vùng code xử lý sau trận nhưng là **một hàm truy vấn bảng khác**. Site 2 crash lúc 20:23 **trước khi fix**, rồi lại crash lúc **21:15 SAU khi fix growth/ranking** → chứng tỏ site 2 là bug **độc lập, chưa từng được xử lý**.
+
+> Báo cáo trước chỉ phân tích duy nhất site 1 (`0x85673ed`), bỏ sót site 2. Đây chính là lý do crash vẫn tái diễn.
+
+### 7.2. Lỗ hổng còn sót phát hiện qua đối chiếu 236 bảng dump
+
+| Bảng | Cầu thủ gốc (19) | Cầu thủ chuyển nhượng (10) | Trạng thái |
+| :--- | :---: | :---: | :--- |
+| `career_playercontract` | 19/19 | 10/10 | ✅ đầy đủ |
+| `career_playergrowthuserseason` | 19/19 | 0/10 → đã fix | ✅ |
+| `career_squadranking` | 19/19 | 0/10 → đã fix | ✅ |
+| `career_playerlastgrowth` | 19/19 | 10/10 | ✅ |
+| **`career_playerlastmatchhistory`** | **8/19** | **4/10** | ❌ **17/29 THIẾU** |
+| `career_playermatchratinghistory` | 0/19 | 0/10 | ⚠️ 0/29 (append-only) |
+
+* **`career_playerlastmatchhistory` thiếu 17/29 cầu thủ VN** (901, 903, 904, 906, 907, 908, 911, 912, 913, 915, 916, 917, 919, 920, 924, 925, 926). Đây là bảng lưu **phong độ (playerfact) + lịch sử trận gần nhất**, được Match Engine đọc khi vào trận. 17 cầu thủ không có record → `GetLastMatchHistory(playerid)` trả `NULL` → deref offset `+0x4` → **crash site 2**.
+* **Cầu thủ `927` còn teamid cũ `31`** trong bảng này (chưa được cập nhật về Binh Tân FC `115486`).
+* **`career_competitionprogress` compobjid 514 (C201) có `stageid = -1`** (thiếu giai đoạn) — hint trong sơ đồ báo cáo trước nhưng chưa từng điều tra.
+
+### 7.3. Giải pháp: Script `fix_remaining_crash.lua`
+Script mới (đã tạo) bổ sung triệt để các lỗ hổng còn sót:
+1. **Bổ sung `career_playerlastmatchhistory`** cho 17 cầu thủ VN còn thiếu (dùng `InsertDBTableRow`, `artificialkey` tăng dần từ max hiện tại, `minsplayed=0`, `playerfact=0`, `playeroverall`/`position` lấy từ bảng `players`).
+2. **Sửa teamid cũ của cầu thủ 927** (`31` → `115486`).
+3. **Sửa `stageid = -1`** của `career_competitionprogress` compobjid 514 (→ `compobjid + 1`).
+4. Idempotent (chạy lại an toàn), tự ghi log vào `viet_hoa_log.txt`.
+
+> **Lưu ý quan trọng:** `FC26.exe` bị mã hóa Denuvo nên **không thể disassemble** để xác nhận 100% field tại offset `+0x4`. Kết luận "site 2 = `career_playerlastmatchhistory`" là suy luận từ đối chiếu dữ liệu (bảng duy nhất có gap 17/29 cầu thủ VN mà match engine đọc khi vào trận). Cần chạy thử trong game để xác nhận.
+
