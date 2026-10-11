@@ -1,6 +1,6 @@
 -- lua/transfer_all_vn_to_binh_tan.lua
--- Script gom 100% toan bo 29 cau thu Viet Nam ve CLB Binh Tan FC (ID: 115486)
--- Tich hop co che tu dong chan duplicate, dam bao moi cau thu chi co dung 1 ban the!
+-- Script chuyen 100% toan bo 29 cau thu Viet Nam ve CLB Binh Tan FC (ID: 115486)
+-- Phien ban thuan tuy: khong loc, khong xoa, chuyen thang teamid ve 115486
 
 local TARGET_TEAM_ID = 115486 -- Binh Tan FC
 
@@ -43,79 +43,43 @@ local function safe_call(fn, ...)
     return nil
 end
 
-local function transfer_and_clean()
-    local bInCM = safe_call(IsInCM) or false
-    local team_id = TARGET_TEAM_ID
+local function transfer_all_to_binh_tan()
+    print("==================================================")
+    print("[To Binh Tan] DANG CHUYEN 29 CAU THU VIET NAM VE BINH TAN FC (ID: 115486)...")
+    print("==================================================")
 
-    if bInCM then
-        local user_tid = safe_call(GetUserTeamID)
-        if user_tid and tonumber(user_tid) and tonumber(user_tid) > 0 then
-            team_id = math.floor(tonumber(user_tid))
+    local bInCM = safe_call(IsInCM) or false
+
+    -- 1. Neu trong Career Mode: goi API TransferPlayer dang ky hop dong
+    if bInCM and TransferPlayer then
+        for pid, name in pairs(VN_PLAYERS) do
+            pcall(TransferPlayer, pid, TARGET_TEAM_ID, 0, 5000, 3, 0, 0)
         end
     end
 
-    local team_name = safe_call(GetTeamName, team_id) or "Binh Tan FC"
-    print(string.format("=================================================="))
-    print(string.format("[Transfer VN] GOM CAU THU VA CHONG DUPLICATE: %s (ID: %d)", team_name, team_id))
-    print(string.format("=================================================="))
-
+    -- 2. Cap nhat tat ca link cua 29 cau thu ve Binh Tan FC (ID: 115486)
     local links = safe_call(GetDBTableRows, "teamplayerlinks")
     if not links then
-        print("[Transfer VN] ERROR: Khong lay duoc bang 'teamplayerlinks' tu RAM!")
+        print("[To Binh Tan] ERROR: Khong lay duoc bang 'teamplayerlinks' tu RAM!")
         return
     end
 
-    -- 1. Gom toan bo lien ket cua 29 cau thu
-    local player_rows = {}
+    local count = 0
     for i = 1, #links do
         local l = links[i]
         local pid = l.playerid and math.floor(tonumber(l.playerid.value) or 0) or 0
+
         if VN_PLAYERS[pid] then
-            if not player_rows[pid] then player_rows[pid] = {} end
-            table.insert(player_rows[pid], l)
+            l.teamid.value = tostring(TARGET_TEAM_ID)
+            if type(EditDBTableField) == "function" then
+                EditDBTableField(l.teamid)
+            end
+            count = count + 1
+            print(string.format("  -> Da chuyen %s (ID %d) ve Binh Tan FC (ID: 115486)", VN_PLAYERS[pid], pid))
         end
     end
 
-    local moved_count = 0
-    local dedup_count = 0
-
-    -- 2. Xu ly an toan tuyet doi: Moi cau thu chi duoc phep co DUY NHAT 1 dong o Binh Tan FC
-    for pid, rows in pairs(player_rows) do
-        local name = VN_PLAYERS[pid]
-        local kept_one = false
-
-        for _, r in ipairs(rows) do
-            local cur_tid = r.teamid and math.floor(tonumber(r.teamid.value) or 0) or 0
-            if cur_tid == team_id then
-                if not kept_one then
-                    kept_one = true -- Giu lai ban the duy nhat
-                else
-                    -- Duplicate thua: chuyen ve Free Agents (111592)
-                    r.teamid.value = "111592"
-                    if type(EditDBTableField) == "function" then
-                        EditDBTableField(r.teamid)
-                    end
-                    dedup_count = dedup_count + 1
-                    print(string.format("  -> Da xoa duplicate thua cua: %s (ID %d)", name, pid))
-                end
-            end
-        end
-
-        -- Neu cau thu chua co dong nao o Binh Tan FC (vi du o Free Agents hoac CLB ngoai)
-        if not kept_one then
-            local first_row = rows[1]
-            if first_row then
-                first_row.teamid.value = tostring(team_id)
-                if type(EditDBTableField) == "function" then
-                    EditDBTableField(first_row.teamid)
-                end
-                moved_count = moved_count + 1
-                print(string.format("  -> Da chuyen: %s (ID %d) -> %s", name, pid, team_name))
-            end
-        end
-    end
-
-    local msg = string.format("[Transfer VN] HOAN TAT! Da chuyen %d cau thu va xoa %d dong duplicate. Moi cau thu chi co 1 ban the duy nhat!", moved_count, dedup_count)
+    local msg = string.format("[To Binh Tan] HOAN TAT! Da chuyen thanh cong toan bo ve Binh Tan FC (ID: 115486) - Tong %d record!", count)
     print("==================================================")
     print(msg)
     print("==================================================")
@@ -128,4 +92,4 @@ local function transfer_and_clean()
     end)
 end
 
-transfer_and_clean()
+transfer_all_to_binh_tan()
