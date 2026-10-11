@@ -91,7 +91,7 @@ local function fix_database()
         print("[Fix DB - Buoc 2] Khong tim thay bang default_teamsheets (bo qua neu khong co).")
     end
 
-    local msg = string.format("[Fix DB] HOAN TAT 100%! Da sua %d link DTQG va don sach %d slot so do doi hinh!", fixed_nt_links, fixed_teamsheet_slots)
+    local msg = string.format("[Fix DB] HOAN TAT 100%%! Da sua %d link DTQG va don sach %d slot so do doi hinh!", fixed_nt_links, fixed_teamsheet_slots)
     print("==================================================")
     print(msg)
     print("Bay gio Binh Tan FC chi con DUY NHAT 1 BAN THE cho moi cau thu!")
