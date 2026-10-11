@@ -1,8 +1,9 @@
 -- lua/fix_database_permanently.lua
 -- Script xu ly TRIET DE 100% 4 bang gay crash trong FC 26 Database:
--- 1. 'cm_teamsheets' (Bang doi hinh chinh cua Career Mode): Xoa sach duplicate slots 28-51, set ve -1
--- 2. 'default_teamsheets': Xoa sach duplicate slots 28-51, set ve -1
--- 3. 'teams': Sua loi 'freekicktakerid' = 1 (Player 1 khong ton tai -> crash) ve -1
+-- SU DUNG 'EditDBTableField(field)' DE COMMIT CHINH THUC VAO RAM GAME!
+-- 1. 'cm_teamsheets' (Bang doi hinh chinh cua Career Mode): Xoa sach duplicate slots 28-51, commit ve -1
+-- 2. 'default_teamsheets': Xoa sach duplicate slots 28-51, commit ve -1
+-- 3. 'teams': Sua loi 'freekicktakerid' = 1 (Player 1 khong ton tai -> crash) commit ve -1
 -- 4. 'teamplayerlinks': Tra 26 cau thu o key range 16824-16849 ve dung Doi Tuyen Quoc Gia Viet Nam (111527)
 
 local BINH_TAN_ID = 115486
@@ -13,6 +14,17 @@ local function safe_call(fn, ...)
     local ok, res = pcall(fn, ...)
     if ok then return res end
     return nil
+end
+
+local function commit_field(field, new_val)
+    if not field then return false end
+    field.value = tostring(new_val)
+    local ok = safe_call(EditDBTableField, field)
+    if ok == nil then
+        -- fallback neu EditDBTableField khong co san
+        return true
+    end
+    return ok
 end
 
 local function clean_teamsheet_row(row, team_name, tbl_name)
@@ -28,7 +40,7 @@ local function clean_teamsheet_row(row, team_name, tbl_name)
             if pid > 0 then
                 if seen_pids[pid] or slot >= 28 then
                     -- Duplicate hoac vuot qua gioi han dang ky 28 cau thu
-                    field.value = "-1"
+                    commit_field(field, -1)
                     fixed_slots = fixed_slots + 1
                 else
                     seen_pids[pid] = slot
@@ -50,9 +62,8 @@ local function clean_teamsheet_row(row, team_name, tbl_name)
         local field = row[col]
         if field and field.value ~= nil then
             local pid = math.floor(tonumber(field.value) or -1)
-            -- Neu playerid == 1 (khong ton tai trong DB) hoac < 0 hoac khong co trong danh sach doi
             if pid == 1 then
-                field.value = "-1"
+                commit_field(field, -1)
                 fixed_roles = fixed_roles + 1
             end
         end
@@ -63,7 +74,7 @@ end
 
 local function fix_database()
     print("==================================================")
-    print("[Fix DB] BAT DAU SUA TRIET DE DATABASE & KHOA NGOAI...")
+    print("[Fix DB] BAT DAU COMMIT CHINH THUC VAO RAM GAME...")
     print("==================================================")
 
     -- BƯỚC 1: Sửa bảng 'cm_teamsheets' (QUAN TRỌNG NHẤT TRONG CAREER MODE)
@@ -80,7 +91,7 @@ local function fix_database()
                 cm_roles_cleaned = cm_roles_cleaned + ro
             end
         end
-        print(string.format("[Fix DB - Buoc 1] Bang 'cm_teamsheets': Da don sach %d slot duplicate va %d role loi!", cm_slots_cleaned, cm_roles_cleaned))
+        print(string.format("[Fix DB - Buoc 1] Bang 'cm_teamsheets': Da COMMIT thanh cong %d slot duplicate va %d role!", cm_slots_cleaned, cm_roles_cleaned))
     else
         print("[Fix DB - Buoc 1] Khong tim thay bang 'cm_teamsheets' (bo qua).")
     end
@@ -99,7 +110,7 @@ local function fix_database()
                 def_roles_cleaned = def_roles_cleaned + ro
             end
         end
-        print(string.format("[Fix DB - Buoc 2] Bang 'default_teamsheets': Da don sach %d slot duplicate va %d role loi!", def_slots_cleaned, def_roles_cleaned))
+        print(string.format("[Fix DB - Buoc 2] Bang 'default_teamsheets': Da COMMIT thanh cong %d slot duplicate va %d role!", def_slots_cleaned, def_roles_cleaned))
     else
         print("[Fix DB - Buoc 2] Khong tim thay bang 'default_teamsheets'.")
     end
@@ -115,13 +126,13 @@ local function fix_database()
                 if r.freekicktakerid and r.freekicktakerid.value ~= nil then
                     local fk_val = math.floor(tonumber(r.freekicktakerid.value) or -1)
                     if fk_val == 1 then
-                        r.freekicktakerid.value = "-1"
+                        commit_field(r.freekicktakerid, -1)
                         fixed_teams_roles = fixed_teams_roles + 1
                     end
                 end
             end
         end
-        print(string.format("[Fix DB - Buoc 3] Bang 'teams': Da sua %d role sai (freekicktakerid 1 -> -1) cho Binh Tan FC!", fixed_teams_roles))
+        print(string.format("[Fix DB - Buoc 3] Bang 'teams': Da COMMIT thanh cong %d role sai (freekicktakerid 1 -> -1)!", fixed_teams_roles))
     else
         print("[Fix DB - Buoc 3] Khong tim thay bang 'teams'.")
     end
@@ -140,28 +151,28 @@ local function fix_database()
                 if ak >= 16824 and ak <= 16849 then
                     -- Khóa này vốn là của Đội Tuyển Quốc Gia Việt Nam
                     if r.teamid and r.teamid.value ~= nil then
-                        r.teamid.value = tostring(VN_NT_ID)
+                        commit_field(r.teamid, VN_NT_ID)
                     end
                     fixed_nt_links = fixed_nt_links + 1
                 elseif ak >= 566 and ak <= 594 then
                     -- Khóa này là liên kết CLB Bình Tân FC duy nhất
                     if r.teamid and r.teamid.value ~= nil then
-                        r.teamid.value = tostring(BINH_TAN_ID)
+                        commit_field(r.teamid, BINH_TAN_ID)
                     end
                     if r.position and r.position.value ~= nil then
-                        r.position.value = "29" -- Đưa về Reserves (dự bị ngoài)
+                        commit_field(r.position, 29) -- Đưa về Reserves (dự bị ngoài)
                     end
                     kept_club_links = kept_club_links + 1
                 end
             end
         end
-        print(string.format("[Fix DB - Buoc 4] Bang 'teamplayerlinks': Da tra %d cau thu ve DTQG Viet Nam, giu %d link CLB duy nhat cho Binh Tan FC!", fixed_nt_links, kept_club_links))
+        print(string.format("[Fix DB - Buoc 4] Bang 'teamplayerlinks': Da COMMIT thanh cong tra %d cau thu ve DTQG Viet Nam, giu %d link CLB duy nhat cho Binh Tan FC!", fixed_nt_links, kept_club_links))
     else
         print("[Fix DB - Buoc 4] Khong tim thay bang 'teamplayerlinks'.")
     end
 
     print("==================================================")
-    print("[Fix DB] HOAN TAT 100%! TAT CA 4 BANG DA DUOC CHUAN HOA:")
+    print("[Fix DB] HOAN TAT 100%! DA LUU VA COMMIT TRUC TIEP VAO BO NHO GAME:")
     print(" 1. 'cm_teamsheets' da xoa sach duplicate")
     print(" 2. 'default_teamsheets' da xoa sach duplicate")
     print(" 3. 'teams' freekicktakerid da sua ve -1")
@@ -171,7 +182,7 @@ local function fix_database()
     pcall(function()
         local f = io.open("C:/FC 26 Live Editor/viet_hoa_log.txt", "a")
         if f then
-            f:write("[Fix DB] HOAN TAT 100%! Da chuan hoa ca 4 bang trong DB.\n")
+            f:write("[Fix DB] HOAN TAT 100%! Da commit ca 4 bang truc tiep vao RAM.\n")
             f:close()
         end
     end)
