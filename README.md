@@ -28,14 +28,19 @@ fc26-vietnamese/
 │   ├── LanguageStrings1.txt        # File chuỗi 1 (65.535 dòng dữ liệu)
 │   └── LanguageStrings2.txt        # File chuỗi 2 (37.715 dòng dữ liệu)
 ├── lua/             # File Lua script thành phẩm nạp vào Live Editor
-│   └── viet_hoa_auto_01.lua .. 09.lua  # Phân trang ~10.000 chuỗi / file
+│   ├── viet_hoa_auto_01.lua .. 09.lua  # Phân trang ~10.000 chuỗi / file (Việt hóa)
+│   ├── buff_vietnam_squad.lua          # Buff chỉ số & chuẩn hóa 29 cầu thủ VN (chuẩn C1)
+│   ├── transfer_all_vn_to_binh_tan.lua # Chuyển nhượng toàn bộ cầu thủ VN về CLB Binh Tan FC
+│   ├── export_vn_players.lua           # Script xuất cầu thủ VN & V-League từ RAM ra JSON
+│   └── dump_all_players.lua            # Script dump 100% database cầu thủ ra JSON/CSV
 ├── src/             # Mã nguồn pipeline xử lý
 │   ├── common.py                   # Tiện ích chung, regex bảo vệ token, xử lý escape
 │   ├── parse.py                    # Kiểm tra tính toàn vẹn và cấu trúc dữ liệu nguồn
 │   ├── prepare.py                  # Lọc quy tắc KEEP, gom cụm dedup, bọc token
 │   ├── translate.py                # Schema, prompt, validation và chạy thử nghiệm
 │   ├── batch.py                    # Điều phối Gemini Batch API (build, submit, fetch)
-│   └── build_lua.py                # Sinh file Lua và kiểm tra tính hợp lệ bằng lupa
+│   ├── build_lua.py                # Sinh file Lua và kiểm tra tính hợp lệ bằng lupa
+│   └── generate_vn_buffs.py        # Generator tính toán thuộc tính & sinh script buff cầu thủ
 ├── .env.example     # File mẫu cấu hình biến môi trường
 └── .gitignore       # Danh sách loại trừ cho Git
 ```
@@ -119,6 +124,38 @@ GEMINI_API_KEY=your_gemini_api_key_here
    C:\FC 26 Live Editor\viet_hoa_log.txt
    ```
 
-## 5. Lưu ý quan trọng
+## 5. Quản lý & Cân bằng chỉ số cầu thủ Việt Nam (Player Attributes & Squad Management)
+
+Hệ thống script can thiệp bộ nhớ RAM game thông qua FC 26 Live Editor, giải quyết triệt để vấn đề cầu thủ Việt Nam trong các bản mod bị dìm chỉ số quá thấp hoặc sai lệch thuộc tính thực tế (chân thuận, sao kỹ thuật, thể lực, vị trí).
+
+### 5.1. Các công cụ chính trong bộ Lua Scripts (`lua/`)
+
+1. **Trích xuất dữ liệu gốc:**
+   - `lua/export_vn_players.lua`: Thuật toán 2-Pass quét và lọc tự động toàn bộ cầu thủ mang quốc tịch Việt Nam (ID `192`), cầu thủ nội/ngoại binh tại V-League và cầu thủ trong đội của người dùng ra `vn_players_raw.json`.
+   - `lua/dump_all_players.lua`: Dump 100% toàn bộ database cầu thủ (hơn 21.800 cầu thủ) ra định dạng JSON và CSV để tra cứu cầu thủ Việt kiều/ẩn danh.
+
+2. **Cân bằng & Buff chỉ số chuẩn Cúp C1 (`lua/buff_vietnam_squad.lua`):**
+   - Được sinh tự động từ `src/generate_vn_buffs.py` với từ điển dữ liệu chuẩn hóa cho **29 cầu thủ Việt Nam**.
+   - **Mặt bằng OVR:** Nâng lên mốc **79 – 83** (đủ sức cạnh tranh sòng phẳng với các CLB hàng đầu châu Âu như Dortmund, Atletico Madrid, Aston Villa).
+   - **Sửa lỗi chân thuận (`FOOT`):** Khắc phục lỗi mod gán chân phải hàng loạt; trả về chân trái chuẩn xác 100% cho: *Đặng Văn Lâm, Đoàn Văn Hậu, Nguyễn Hoàng Đức, Đỗ Hoàng Hen (Hendrio), Nguyễn Văn Vĩ, Khuất Văn Khang, Nguyễn Nhật Minh*.
+   - **Nâng cấp Kỹ thuật (`SM`) & Chân phụ (`WF`):** Đẩy lên **4★ Kỹ thuật** cho các cầu thủ rê dắt khéo léo (*Quang Hải, Hoàng Đức, Văn Toàn, Công Phượng, Hendrio, Tuấn Anh, Đình Bắc*) và **4★ Chân không thuận** cho các mũi nhọn dứt điểm (*Tiến Linh, Tuấn Hải, Xuân Son*).
+   - **Tối ưu vị trí phụ (`ALT POS`):** Bổ sung vị trí phụ đầy đủ (Quang Hải: CAM/RW/LW; Văn Toàn: RW/ST; Tuấn Hải: ST/LW; Văn Hậu: LB/CB; Hoàng Đức: CM/CAM/CDM; Hendrio: CAM/CM/RM).
+   - **Giữ trọn tỉ lệ phong cách thực tế:** Văn Toàn bứt tốc đỉnh cao (`Pace 92/91`, Dứt điểm 75); Tiến Linh trả tốc độ về `76` nhưng nâng Đánh đầu lên `86`, Dứt điểm `85`, Chọn vị trí `86`; Nguyễn Xuân Son (Rafaelson) tì đè càn lướt (`Sức mạnh 89`, Dứt điểm `88`).
+   - **Sàn thể lực (`Stamina`):** Đẩy lên mốc **82 – 92** toàn đội, đảm bảo thi đấu đủ 90 phút pressing cường độ cao mà không bị kiệt sức.
+
+3. **Chuyển nhượng gom toàn bộ đội hình (`lua/transfer_all_vn_to_binh_tan.lua`):**
+   - Tự động gom toàn bộ 29 cầu thủ Việt Nam (kể cả đang ở Free Agents hay thất lạc tại các CLB khác) về **Binh Tan FC** (ID `115486` hoặc ID CLB bạn đang cầm trong Career Mode).
+   - Tương thích chuẩn API C++ của FC 26 Live Editor: truyền đủ 7 tham số hợp đồng (`playerid`, `teamid`, `fee = 0`, `wage = 5000`, `contract_length = 3`, `squad_role = 0`, `release_clause = 0`) và đồng bộ trực tiếp vào bảng quan hệ database `teamplayerlinks`.
+
+### 5.2. Hướng dẫn sử dụng trong Career Mode
+
+1. Mở game FC 26 qua Live Editor $\rightarrow$ Nạp file save **Career Mode** (nơi bạn quản lý Binh Tan FC).
+2. Mở Live Editor (phím `F9` hoặc `Insert`) $\rightarrow$ vào tab **Lua Engine**.
+3. Bấm **Open** và chọn chạy lần lượt:
+   - `lua/transfer_all_vn_to_binh_tan.lua` $\rightarrow$ Bấm **Execute** (Gom tất cả cầu thủ về đội).
+   - `lua/buff_vietnam_squad.lua` $\rightarrow$ Bấm **Execute** (Buff chỉ số, chân thuận và kỹ thuật).
+4. Bấm **Save Game** trong Career Mode. Toàn bộ thay đổi sẽ được lưu vĩnh viễn vào file save Career Mode mà không cần chạy lại script ở các lần chơi tiếp theo.
+
+## 6. Lưu ý quan trọng
 - Bản mod này chỉ dành cho mục đích sử dụng cá nhân và các chế độ chơi ngoại tuyến (Career Mode, Tournament, Kick Off...).
 - Khi tham gia các chế độ chơi trực tuyến có hệ thống chống gian lận (như Ultimate Team trực tuyến hoặc Clubs), vui lòng khởi động game bình thường qua EA App mà không sử dụng Live Editor để đảm bảo an toàn cho tài khoản.
