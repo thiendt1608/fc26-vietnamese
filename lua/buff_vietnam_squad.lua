@@ -5,7 +5,7 @@
 local BUFFS = {
     [900] = { -- Dang Van Lam
         overallrating = 81, potential = 85, preferredposition1 = 0,
-        preferredfoot = 2, weakfootabilitycode = 3, skillmoves = 1,
+        preferredfoot = 2, weakfootabilitytypecode = 3, skillmoves = 1,
         height = 188, weight = 86,
         acceleration = 45, sprintspeed = 46,
         positioning = 15, finishing = 15, shotpower = 68,
@@ -22,7 +22,7 @@ local BUFFS = {
     },
     [901] = { -- Nguyen Van Toan
         overallrating = 80, potential = 85, preferredposition1 = 23, preferredposition2 = 25, preferredposition3 = 12,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 4,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 4,
         height = 170, weight = 65,
         acceleration = 92, sprintspeed = 91,
         positioning = 82, finishing = 75, shotpower = 77,
@@ -39,7 +39,7 @@ local BUFFS = {
     },
     [902] = { -- Ho Tan Tai
         overallrating = 79, potential = 83, preferredposition1 = 3, preferredposition2 = 2, preferredposition3 = 12,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 3,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 3,
         height = 180, weight = 74,
         acceleration = 82, sprintspeed = 83,
         positioning = 74, finishing = 65, shotpower = 76,
@@ -56,7 +56,7 @@ local BUFFS = {
     },
     [903] = { -- Nguyen Quang Hai
         overallrating = 82, potential = 85, preferredposition1 = 18, preferredposition2 = 23, preferredposition3 = 27,
-        preferredfoot = 2, weakfootabilitycode = 3, skillmoves = 4,
+        preferredfoot = 2, weakfootabilitytypecode = 3, skillmoves = 4,
         height = 168, weight = 67,
         acceleration = 81, sprintspeed = 78,
         positioning = 82, finishing = 82, shotpower = 84,
@@ -73,7 +73,7 @@ local BUFFS = {
     },
     [904] = { -- Nguyen Trong Dai
         overallrating = 78, potential = 82, preferredposition1 = 10,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 2,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 2,
         height = 184, weight = 76,
         acceleration = 74, sprintspeed = 75,
         positioning = 55, finishing = 52, shotpower = 78,
@@ -90,7 +90,7 @@ local BUFFS = {
     },
     [905] = { -- Doan Van Hau
         overallrating = 81, potential = 85, preferredposition1 = 7, preferredposition2 = 5, preferredposition3 = 8,
-        preferredfoot = 2, weakfootabilitycode = 3, skillmoves = 3,
+        preferredfoot = 2, weakfootabilitytypecode = 3, skillmoves = 3,
         height = 185, weight = 82,
         acceleration = 84, sprintspeed = 85,
         positioning = 76, finishing = 68, shotpower = 84,
@@ -107,7 +107,7 @@ local BUFFS = {
     },
     [906] = { -- Vu Van Thanh
         overallrating = 79, potential = 83, preferredposition1 = 3, preferredposition2 = 7, preferredposition3 = 2,
-        preferredfoot = 1, weakfootabilitycode = 4, skillmoves = 3,
+        preferredfoot = 1, weakfootabilitytypecode = 4, skillmoves = 3,
         height = 170, weight = 69,
         acceleration = 84, sprintspeed = 83,
         positioning = 75, finishing = 70, shotpower = 80,
@@ -124,7 +124,7 @@ local BUFFS = {
     },
     [907] = { -- B H Viet Anh
         overallrating = 81, potential = 86, preferredposition1 = 5, preferredposition2 = 10,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 2,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 2,
         height = 186, weight = 80,
         acceleration = 76, sprintspeed = 77,
         positioning = 40, finishing = 40, shotpower = 72,
@@ -141,7 +141,7 @@ local BUFFS = {
     },
     [908] = { -- Nguyen Hoang Duc
         overallrating = 82, potential = 86, preferredposition1 = 14, preferredposition2 = 18, preferredposition3 = 10,
-        preferredfoot = 2, weakfootabilitycode = 4, skillmoves = 4,
+        preferredfoot = 2, weakfootabilitytypecode = 4, skillmoves = 4,
         height = 184, weight = 76,
         acceleration = 78, sprintspeed = 77,
         positioning = 80, finishing = 76, shotpower = 82,
@@ -158,7 +158,7 @@ local BUFFS = {
     },
     [909] = { -- Nguyen Cong Phuong
         overallrating = 79, potential = 82, preferredposition1 = 21, preferredposition2 = 23, preferredposition3 = 27,
-        preferredfoot = 1, weakfootabilitycode = 4, skillmoves = 4,
+        preferredfoot = 1, weakfootabilitytypecode = 4, skillmoves = 4,
         height = 168, weight = 65,
         acceleration = 85, sprintspeed = 83,
         positioning = 80, finishing = 79, shotpower = 81,
@@ -175,7 +175,7 @@ local BUFFS = {
     },
     [910] = { -- Do Hung Dung
         overallrating = 80, potential = 83, preferredposition1 = 10, preferredposition2 = 10,
-        preferredfoot = 1, weakfootabilitycode = 4, skillmoves = 3,
+        preferredfoot = 1, weakfootabilitytypecode = 4, skillmoves = 3,
         height = 170, weight = 66,
         acceleration = 76, sprintspeed = 77,
         positioning = 74, finishing = 68, shotpower = 76,
@@ -192,7 +192,7 @@ local BUFFS = {
     },
     [911] = { -- Do Duy Manh
         overallrating = 80, potential = 84, preferredposition1 = 5, preferredposition2 = 10, preferredposition3 = 3,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 2,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 2,
         height = 180, weight = 75,
         acceleration = 75, sprintspeed = 74,
         positioning = 42, finishing = 38, shotpower = 75,
@@ -209,7 +209,7 @@ local BUFFS = {
     },
     [912] = { -- Nguyen Tien Linh
         overallrating = 81, potential = 84, preferredposition1 = 25, preferredposition2 = 21,
-        preferredfoot = 1, weakfootabilitycode = 4, skillmoves = 3,
+        preferredfoot = 1, weakfootabilitytypecode = 4, skillmoves = 3,
         height = 180, weight = 76,
         acceleration = 77, sprintspeed = 76,
         positioning = 86, finishing = 85, shotpower = 84,
@@ -226,7 +226,7 @@ local BUFFS = {
     },
     [913] = { -- Nguyen Tuan Anh
         overallrating = 79, potential = 83, preferredposition1 = 14, preferredposition2 = 10,
-        preferredfoot = 1, weakfootabilitycode = 4, skillmoves = 4,
+        preferredfoot = 1, weakfootabilitytypecode = 4, skillmoves = 4,
         height = 176, weight = 68,
         acceleration = 75, sprintspeed = 74,
         positioning = 72, finishing = 66, shotpower = 75,
@@ -243,7 +243,7 @@ local BUFFS = {
     },
     [914] = { -- Bui Tien Dung
         overallrating = 79, potential = 83, preferredposition1 = 5,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 2,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 2,
         height = 176, weight = 72,
         acceleration = 75, sprintspeed = 74,
         positioning = 38, finishing = 35, shotpower = 68,
@@ -260,7 +260,7 @@ local BUFFS = {
     },
     [915] = { -- Que Ngoc Hai
         overallrating = 81, potential = 84, preferredposition1 = 5, preferredposition2 = 10,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 2,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 2,
         height = 182, weight = 78,
         acceleration = 74, sprintspeed = 75,
         positioning = 45, finishing = 42, shotpower = 78,
@@ -277,7 +277,7 @@ local BUFFS = {
     },
     [916] = { -- Luong Xuan Truong
         overallrating = 79, potential = 82, preferredposition1 = 14,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 3,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 3,
         height = 178, weight = 72,
         acceleration = 70, sprintspeed = 69,
         positioning = 72, finishing = 68, shotpower = 78,
@@ -294,7 +294,7 @@ local BUFFS = {
     },
     [917] = { -- Pham Tuan Hai
         overallrating = 81, potential = 86, preferredposition1 = 25, preferredposition2 = 27, preferredposition3 = 21,
-        preferredfoot = 1, weakfootabilitycode = 4, skillmoves = 3,
+        preferredfoot = 1, weakfootabilitytypecode = 4, skillmoves = 3,
         height = 172, weight = 70,
         acceleration = 85, sprintspeed = 84,
         positioning = 83, finishing = 83, shotpower = 85,
@@ -311,7 +311,7 @@ local BUFFS = {
     },
     [918] = { -- Nguyen Thanh Chung
         overallrating = 79, potential = 82, preferredposition1 = 5, preferredposition2 = 25,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 2,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 2,
         height = 182, weight = 77,
         acceleration = 74, sprintspeed = 73,
         positioning = 55, finishing = 52, shotpower = 76,
@@ -328,7 +328,7 @@ local BUFFS = {
     },
     [919] = { -- Bui Tan Truong
         overallrating = 79, potential = 82, preferredposition1 = 0,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 1,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 1,
         height = 188, weight = 84,
         acceleration = 40, sprintspeed = 40,
         positioning = 14, finishing = 12, shotpower = 64,
@@ -345,7 +345,7 @@ local BUFFS = {
     },
     [920] = { -- Phi Minh Long
         overallrating = 78, potential = 83, preferredposition1 = 0,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 1,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 1,
         height = 180, weight = 75,
         acceleration = 42, sprintspeed = 42,
         positioning = 14, finishing = 12, shotpower = 60,
@@ -362,7 +362,7 @@ local BUFFS = {
     },
     [921] = { -- Nguyen Xuan Son
         overallrating = 83, potential = 87, preferredposition1 = 25, preferredposition2 = 21,
-        preferredfoot = 1, weakfootabilitycode = 4, skillmoves = 3,
+        preferredfoot = 1, weakfootabilitytypecode = 4, skillmoves = 3,
         height = 185, weight = 86,
         acceleration = 79, sprintspeed = 80,
         positioning = 88, finishing = 88, shotpower = 88,
@@ -379,7 +379,7 @@ local BUFFS = {
     },
     [922] = { -- Do Hoang Hen
         overallrating = 82, potential = 85, preferredposition1 = 18, preferredposition2 = 14, preferredposition3 = 12,
-        preferredfoot = 2, weakfootabilitycode = 4, skillmoves = 4,
+        preferredfoot = 2, weakfootabilitytypecode = 4, skillmoves = 4,
         height = 181, weight = 74,
         acceleration = 78, sprintspeed = 77,
         positioning = 82, finishing = 80, shotpower = 82,
@@ -396,7 +396,7 @@ local BUFFS = {
     },
     [923] = { -- Nguyen Dinh Bac
         overallrating = 79, potential = 87, preferredposition1 = 27, preferredposition2 = 25, preferredposition3 = 23,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 4,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 4,
         height = 180, weight = 72,
         acceleration = 88, sprintspeed = 87,
         positioning = 80, finishing = 79, shotpower = 82,
@@ -413,7 +413,7 @@ local BUFFS = {
     },
     [924] = { -- Khuat Van Khang
         overallrating = 78, potential = 86, preferredposition1 = 16, preferredposition2 = 27, preferredposition3 = 14,
-        preferredfoot = 2, weakfootabilitycode = 3, skillmoves = 4,
+        preferredfoot = 2, weakfootabilitytypecode = 3, skillmoves = 4,
         height = 171, weight = 66,
         acceleration = 84, sprintspeed = 83,
         positioning = 76, finishing = 74, shotpower = 78,
@@ -430,7 +430,7 @@ local BUFFS = {
     },
     [925] = { -- Nguyen Van Vi
         overallrating = 79, potential = 82, preferredposition1 = 7, preferredposition2 = 16, preferredposition3 = 8,
-        preferredfoot = 2, weakfootabilitycode = 3, skillmoves = 3,
+        preferredfoot = 2, weakfootabilitytypecode = 3, skillmoves = 3,
         height = 169, weight = 65,
         acceleration = 88, sprintspeed = 87,
         positioning = 72, finishing = 62, shotpower = 74,
@@ -447,7 +447,7 @@ local BUFFS = {
     },
     [926] = { -- Nguyen Nhat Minh
         overallrating = 78, potential = 84, preferredposition1 = 5,
-        preferredfoot = 2, weakfootabilitycode = 3, skillmoves = 2,
+        preferredfoot = 2, weakfootabilitytypecode = 3, skillmoves = 2,
         height = 180, weight = 75,
         acceleration = 74, sprintspeed = 75,
         positioning = 38, finishing = 32, shotpower = 70,
@@ -464,7 +464,7 @@ local BUFFS = {
     },
     [927] = { -- Do Phi Long
         overallrating = 79, potential = 83, preferredposition1 = 5,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 2,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 2,
         height = 183, weight = 78,
         acceleration = 73, sprintspeed = 74,
         positioning = 40, finishing = 35, shotpower = 72,
@@ -481,7 +481,7 @@ local BUFFS = {
     },
     [928] = { -- Nguyen Tai Loc
         overallrating = 80, potential = 83, preferredposition1 = 25, preferredposition2 = 18, preferredposition3 = 23,
-        preferredfoot = 1, weakfootabilitycode = 3, skillmoves = 3,
+        preferredfoot = 1, weakfootabilitytypecode = 3, skillmoves = 3,
         height = 180, weight = 75,
         acceleration = 78, sprintspeed = 78,
         positioning = 82, finishing = 82, shotpower = 83,
